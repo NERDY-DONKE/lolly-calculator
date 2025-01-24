@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lolly Bundle Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        label {
+            font-size: 1.1em;
+        }
+        select, input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            font-size: 1em;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 1.1em;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        .result span {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Lolly Bundle Calculator</h1>
+
+        <!-- Select Bundle Size -->
+        <label for="bundle-size">Choose a Bundle Size:</label>
+        <select id="bundle-size" onchange="updateBundle()">
+            <option value="3">Small Bundle (3 Lollies) - Charge 52c</option>
+            <option value="5">Medium Bundle (5 Lollies) - Charge 87c</option>
+            <option value="10">Large Bundle (10 Lollies) - Charge $1.35</option>
+        </select>
+
+        <!-- Select Lollies -->
+        <label for="chupa-chups">Chupa Chups (6c each)</label>
+        <input type="number" id="chupa-chups" value="0" min="0" onchange="checkMaxInput()" />
+
+        <label for="bitecrawlers">Bitecrawlers (10c each)</label>
+        <input type="number" id="bitecrawlers" value="0" min="0" onchange="checkMaxInput()" />
+
+        <label for="blue-clouds">Blue Clouds (12c each)</label>
+        <input type="number" id="blue-clouds" value="0" min="0" onchange="checkMaxInput()" />
+
+        <!-- Calculate Button -->
+        <button onclick="calculateBundle()">Calculate Bundle</button>
+
+        <!-- Result Display -->
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        // Function to update bundle size and reset inputs
+        function updateBundle() {
+            const bundleSize = parseInt(document.getElementById('bundle-size').value);
+            document.getElementById('chupa-chups').max = bundleSize;
+            document.getElementById('bitecrawlers').max = bundleSize;
+            document.getElementById('blue-clouds').max = bundleSize;
+
+            // Reset inputs when bundle size changes
+            document.getElementById('chupa-chups').value = 0;
+            document.getElementById('bitecrawlers').value = 0;
+            document.getElementById('blue-clouds').value = 0;
+
+            // Clear result if bundle size is changed
+            document.getElementById('result').innerHTML = '';
+        }
+
+        // Function to check if the total number of lollies exceeds the bundle size
+        function checkMaxInput() {
+            const bundleSize = parseInt(document.getElementById('bundle-size').value);
+            const chupaCount = parseInt(document.getElementById('chupa-chups').value);
+            const bitecrawlersCount = parseInt(document.getElementById('bitecrawlers').value);
+            const blueCloudsCount = parseInt(document.getElementById('blue-clouds').value);
+            const totalLollies = chupaCount + bitecrawlersCount + blueCloudsCount;
+
+            // Disable inputs when total lollies reach the bundle size
+            if (totalLollies >= bundleSize) {
+                document.getElementById('chupa-chups').disabled = true;
+                document.getElementById('bitecrawlers').disabled = true;
+                document.getElementById('blue-clouds').disabled = true;
+
+                // Enabling the necessary fields again when they go below the limit
+                if (chupaCount + bitecrawlersCount + blueCloudsCount < bundleSize) {
+                    document.getElementById('chupa-chups').disabled = false;
+                    document.getElementById('bitecrawlers').disabled = false;
+                    document.getElementById('blue-clouds').disabled = false;
+                }
+            }
+        }
+
+        // Function to calculate the bundle price and profit
+        function calculateBundle() {
+            // Prices per lolly in cents
+            const chupaPrice = 6; // Chupa Chups
+            const bitecrawlersPrice = 10; // Bitecrawlers
+            const blueCloudsPrice = 12; // Blue Clouds
+
+            // Get the selected bundle size
+            const bundleSize = parseInt(document.getElementById('bundle-size').value);
+
+            // Get the quantities of each lolly
+            const chupaCount = parseInt(document.getElementById('chupa-chups').value);
+            const bitecrawlersCount = parseInt(document.getElementById('bitecrawlers').value);
+            const blueCloudsCount = parseInt(document.getElementById('blue-clouds').value);
+
+            // Check if the total lollies match the selected bundle size
+            const totalLollies = chupaCount + bitecrawlersCount + blueCloudsCount;
+
+            if (totalLollies !== bundleSize) {
+                alert(`You need to select exactly ${bundleSize} lollies for this bundle.`);
+                return;
+            }
+
+            // Calculate total cost (in cents)
+            const totalCost = (chupaCount * chupaPrice) + (bitecrawlersCount * bitecrawlersPrice) + (blueCloudsCount * blueCloudsPrice);
+
+            // Customer price based on fixed bundle prices
+            let customerPrice;
+            if (bundleSize === 3) {
+                customerPrice = 52; // 52c for small bundle
+            } else if (bundleSize === 5) {
+                customerPrice = 87; // 87c for medium bundle
+            } else if (bundleSize === 10) {
+                customerPrice = 135; // $1.35 (135c) for large bundle
+            }
+
+            // Calculate your profit
+            const profitAmount = customerPrice - totalCost;
+
+            // Display results
+            document.getElementById('result').innerHTML = `
+                <p>Total Cost: <span>$${(totalCost / 100).toFixed(2)}</span></p>
+                <p>Customer Price: <span>$${(customerPrice / 100).toFixed(2)}</span></p>
+                <p>Your Profit: <span>$${(profitAmount / 100).toFixed(2)}</span></p>
+            `;
+        }
+
+        // Initialize the bundle on page load
+        window.onload = updateBundle;
+    </script>
+
+</body>
+</html>
