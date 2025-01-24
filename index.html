@@ -66,9 +66,9 @@
         <!-- Select Bundle Size -->
         <label for="bundle-size">Choose a Bundle Size:</label>
         <select id="bundle-size" onchange="updateBundle()">
-            <option value="3">Small Bundle (3 Lollies) - Charge 52c</option>
-            <option value="5">Medium Bundle (5 Lollies) - Charge 87c</option>
-            <option value="10">Large Bundle (10 Lollies) - Charge $1.35</option>
+            <option value="3">Small Bundle (3 Lollies) - Charge 50c</option>
+            <option value="5">Medium Bundle (5 Lollies) - Charge $1.00</option>
+            <option value="10">Large Bundle (10 Lollies) - Charge $1.40</option>
         </select>
 
         <!-- Select Lollies -->
@@ -139,47 +139,7 @@
             const bundleSize = parseInt(document.getElementById('bundle-size').value);
 
             // Get the quantities of each lolly
-            const chupaCount = parseInt(document.getElementById('chupa-chups').value);
-            const bitecrawlersCount = parseInt(document.getElementById('bitecrawlers').value);
-            const blueCloudsCount = parseInt(document.getElementById('blue-clouds').value);
+            const chupaCount
 
-            // Check if the total lollies match the selected bundle size
-            const totalLollies = chupaCount + bitecrawlersCount + blueCloudsCount;
-
-            if (totalLollies !== bundleSize) {
-                alert(`You need to select exactly ${bundleSize} lollies for this bundle.`);
-                return;
-            }
-
-            // Calculate total cost (in cents)
-            const totalCost = (chupaCount * chupaPrice) + (bitecrawlersCount * bitecrawlersPrice) + (blueCloudsCount * blueCloudsPrice);
-
-            // Customer price based on fixed bundle prices
-            let customerPrice;
-            if (bundleSize === 3) {
-                customerPrice = 52; // 52c for small bundle
-            } else if (bundleSize === 5) {
-                customerPrice = 87; // 87c for medium bundle
-            } else if (bundleSize === 10) {
-                customerPrice = 135; // $1.35 (135c) for large bundle
-            }
-
-            // Calculate your profit
-            const profitAmount = customerPrice - totalCost;
-
-            // Display results
-            document.getElementById('result').innerHTML = `
-                <p>Total Cost: <span>$${(totalCost / 100).toFixed(2)}</span></p>
-                <p>Customer Price: <span>$${(customerPrice / 100).toFixed(2)}</span></p>
-                <p>Your Profit: <span>$${(profitAmount / 100).toFixed(2)}</span></p>
-            `;
-        }
-
-        // Initialize the bundle on page load
-        window.onload = updateBundle;
-    </script>
-
-</body>
-</html>
 
 
