@@ -25,7 +25,7 @@
         label {
             font-size: 1.1em;
         }
-        select, input[type="number"] {
+        select, input[type="number"], input[type="text"] {
             width: 100%;
             padding: 8px;
             margin-bottom: 10px;
@@ -84,8 +84,14 @@
         <!-- Calculate Button -->
         <button onclick="calculateBundle()">Calculate Bundle</button>
 
+        <!-- Insert Order Code Button -->
+        <label for="insert-order-code">Insert Order Code:</label>
+        <input type="text" id="insert-order-code" placeholder="Enter Order Code (e.g., A-02-03-05)" />
+        <button onclick="insertOrderCode()">Insert Order Code</button>
+
         <!-- Result Display -->
         <div class="result" id="result"></div>
+        <div class="result" id="order-code-display"></div>
     </div>
 
     <script>
@@ -118,19 +124,11 @@
                 document.getElementById('chupa-chups').disabled = true;
                 document.getElementById('bitecrawlers').disabled = true;
                 document.getElementById('blue-clouds').disabled = true;
-
-                // Enabling the necessary fields again when they go below the limit
-                if (chupaCount + bitecrawlersCount + blueCloudsCount < bundleSize) {
-                    document.getElementById('chupa-chups').disabled = false;
-                    document.getElementById('bitecrawlers').disabled = false;
-                    document.getElementById('blue-clouds').disabled = false;
-                }
             }
         }
 
         // Function to calculate the bundle price and profit
         function calculateBundle() {
-            // Prices per lolly in cents
             const chupaPrice = 6; // Chupa Chups
             const bitecrawlersPrice = 10; // Bitecrawlers
             const blueCloudsPrice = 12; // Blue Clouds
@@ -139,7 +137,101 @@
             const bundleSize = parseInt(document.getElementById('bundle-size').value);
 
             // Get the quantities of each lolly
-            const chupaCount
+            const chupaCount = parseInt(document.getElementById('chupa-chups').value);
+            const bitecrawlersCount = parseInt(document.getElementById('bitecrawlers').value);
+            const blueCloudsCount = parseInt(document.getElementById('blue-clouds').value);
+
+            // Check if the total lollies match the selected bundle size
+            const totalLollies = chupaCount + bitecrawlersCount + blueCloudsCount;
+
+            if (totalLollies !== bundleSize) {
+                alert(`You need to select exactly ${bundleSize} lollies for this bundle.`);
+                return;
+            }
+
+            // Calculate total cost (in cents)
+            const totalCost = (chupaCount * chupaPrice) + (bitecrawlersCount * bitecrawlersPrice) + (blueCloudsCount * blueCloudsPrice);
+
+            // Customer price based on fixed bundle prices
+            let customerPrice;
+            if (bundleSize === 3) {
+                customerPrice = 50; // 50c for small bundle
+            } else if (bundleSize === 5) {
+                customerPrice = 100; // $1.00 for medium bundle
+            } else if (bundleSize === 10) {
+                customerPrice = 140; // $1.40 for large bundle
+            }
+
+            // Calculate your profit
+            const profitAmount = customerPrice - totalCost;
+
+            // Generate the order code
+            const chupaCode = chupaCount.toString().padStart(2, '0');
+            const bitecrawlersCode = bitecrawlersCount.toString().padStart(2, '0');
+            const blueCloudsCode = blueCloudsCount.toString().padStart(2, '0');
+
+            let sizeCode;
+            if (bundleSize === 3) sizeCode = 'A';
+            else if (bundleSize === 5) sizeCode = 'B';
+            else if (bundleSize === 10) sizeCode = 'C';
+
+            const orderCode = `${sizeCode}-${chupaCode}-${bitecrawlersCode}-${blueCloudsCode}`;
+
+            // Display results
+            document.getElementById('result').innerHTML = `
+                <p>Total Cost: <span>$${(totalCost / 100).toFixed(2)}</span></p>
+                <p>Customer Price: <span>$${(customerPrice / 100).toFixed(2)}</span></p>
+                <p>Your Profit: <span>$${(profitAmount / 100).toFixed(2)}</span></p>
+            `;
+
+            // Display the generated order code
+            document.getElementById('order-code-display').innerHTML = `
+                <p>Order Code: ${orderCode}</p>
+            `;
+        }
+
+        // Function to insert the order code
+        function insertOrderCode() {
+            const orderCode = document.getElementById('insert-order-code').value.trim().toUpperCase();
+            const parts = orderCode.split('-');
+
+            if (parts.length !== 4) {
+                alert('Invalid order code format. Please ensure it is in the correct format (e.g., A-02-03-05).');
+                return;
+            }
+
+            const sizeCode = parts[0];
+            const chupaCount = parseInt(parts[1]);
+            const bitecrawlersCount = parseInt(parts[2]);
+            const blueCloudsCount = parseInt(parts[3]);
+
+            let bundleSize;
+            if (sizeCode === 'A') bundleSize = 3;
+            else if (sizeCode === 'B') bundleSize = 5;
+            else if (sizeCode === 'C') bundleSize = 10;
+            else {
+                alert('Invalid bundle size in order code.');
+                return;
+            }
+
+            // Set bundle size and input values
+            document.getElementById('bundle-size').value = bundleSize;
+            updateBundle();
+            document.getElementById('chupa-chups').value = chupaCount;
+            document.getElementById('bitecrawlers').value = bitecrawlersCount;
+            document.getElementById('blue-clouds').value = blueCloudsCount;
+
+            // Optionally, re-enable inputs based on the new bundle size
+            checkMaxInput();
+        }
+
+        // Initialize the bundle on page load
+        window.onload = updateBundle;
+    </script>
+
+</body>
+</html>
+
 
 
 
